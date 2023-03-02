@@ -19,39 +19,11 @@ def is_binary(filepath):
 #    mime_type= magic.from_file(filepath, mime=True)
 #    return mime_type == 'application/octet-stream'
 
-#def is_binary(filepath):
-#    cmd = ['file', '-b', '--mime-encoding', filepath]
-#    output = subprocess.check_output(cmd).decode('utf-8').strip()
-#    if output == 'binary':
-#        return True
-#    else:
-#        return False
-
-#def is_ascii(filepath):
-#    print(",", end='', flush=True)
-#    try:
-#        output = subprocess.check_output(["file", "--mime-encoding", filepath]).decode("utf-8")
-#        return output.startswith("ASCII")
-#    except subprocess.CalledProcessError:
-#        return False
-
-
-#def detect_encoding(filepath):
-#    print(",", end='', flush=True)
-#    with open(filepath, 'rb') as f:
-#        detector = chardet.UniversalDetector()
-#        for line in f.readlines():
-#            detector.feed(line)
-#            if detector.done:
-#                break
-#        detector.close()
-#        return detector.result['encoding']
 
 def compress_file(filepath, pigz_threads):
     try:
         username = pwd.getpwuid(os.stat(filepath).st_uid).pw_name
         cmd = ['sudo', '-u', username, 'pigz',  '-p', str(pigz_threads), filepath]
-#        print(f"Compressing {filepath} with: {' '.join(cmd)}")
         subprocess.run(cmd, check=True)
         print(f",", end='', flush=True)
     except subprocess.CalledProcessError as e:
@@ -69,8 +41,6 @@ def explore_dir(dir_path, num_threads, num_simultaneous, min_age, min_size, excl
     dots_printed = False
     for root, dirs, files in os.walk(dir_path):
         # Exclude directories starting with dot, containing "conda", or "R"
-#        dirs[:] = [d for d in dirs if not any(exclude in os.path.join(root, d) for exclude in exclude_dirs) and not d.startswith('.')]
-#        dirs[:] = [d for d in dirs if not d.startswith('.') and 'conda' not in d and d != 'R']
         dirs[:] = [d for d in dirs if not d.startswith('.') and 'conda' not in d and not any(exclude in os.path.join(root, d) for exclude in exclude_dirs)]
         for filename in files:
             filepath = os.path.join(root, filename)
