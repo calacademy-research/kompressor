@@ -23,7 +23,7 @@ def is_binary(filepath):
 def compress_file(filepath, pigz_threads):
     try:
         username = pwd.getpwuid(os.stat(filepath).st_uid).pw_name
-        cmd = ['sudo', '-u', username, 'pigz',  '-p', str(pigz_threads), filepath]
+        cmd = ['sudo', '-u', username, 'pigz',  '-f','-p', str(pigz_threads), filepath]
         subprocess.run(cmd, check=True)
         print(f",", end='', flush=True)
     except subprocess.CalledProcessError as e:
