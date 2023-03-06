@@ -44,9 +44,13 @@ def explore_dir(dir_path, num_threads, num_simultaneous, min_age, min_size, excl
         dirs[:] = [d for d in dirs if not d.startswith('.') and 'conda' not in d and not any(exclude in os.path.join(root, d) for exclude in exclude_dirs)]
         for filename in files:
             filepath = os.path.join(root, filename)
-            if os.path.islink(filepath) or is_binary(filepath):
-                rejected += 1
-                continue
+            try:
+                if os.path.islink(filepath) or is_binary(filepath):
+                    rejected += 1
+                    continue
+            except Exception as e:
+                print(f"Exception, skipping file: {e}")
+
             statinfo = os.stat(filepath)
             age_in_days = (time.time() - statinfo.st_mtime) / 86400.0 #86400 seconds = 1 day
             if age_in_days >= min_age and statinfo.st_size >= min_size*1024 and not is_binary(filepath):
